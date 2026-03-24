@@ -1,4 +1,4 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, request
 
 app = Flask(__name__)
 
@@ -240,6 +240,87 @@ def results(nickname, level, rating):
     </div>
 </body>
 </html>"""
+
+
+@app.route('/upload_photo', methods=['POST', 'GET'])
+def upload_photo():
+    uploaded_image = None
+
+    if request.method == 'GET':
+        return f'''<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}">
+    <title>Загрузка фотографии</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Загрузка фотографии</h1>
+        <h3 class="text-center text-muted mb-4">для участия в миссии</h3>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="photo" class="form-label">Приложите фотографию</label>
+                                <input type="file" class="form-control" id="photo" name="photo">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Отправить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>'''
+
+    elif request.method == 'POST':
+        f = request.files['photo']
+        f.save(f'static/img/{f.filename}')
+        uploaded_image = url_for('static', filename=f'img/{f.filename}')
+
+        return f'''<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}">
+    <title>Загрузка фотографии</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Загрузка фотографии</h1>
+        <h3 class="text-center text-muted mb-4">для участия в миссии</h3>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="photo" class="form-label">Приложите фотографию</label>
+                                <input type="file" class="form-control" id="photo" name="photo">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Отправить</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <img src="{uploaded_image}" class="img-fluid rounded" style="max-height: 300px;" alt="Загруженное фото">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>'''
 
 
 @app.route('/carousel')
